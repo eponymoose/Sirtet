@@ -129,7 +129,7 @@ public class ActiveBricks {
 		return bottom;
 	}
 
-	public void ApplyToBoard( BoardModel board)
+	public void ApplyToBoard( BoardModel board )
 	{
 		for( int y = 0; y < _bricks.GetLength(0); ++y )
 		{

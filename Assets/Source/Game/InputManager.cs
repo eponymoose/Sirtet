@@ -10,6 +10,7 @@ public class InputManager {
 		MoveRight,
 		RotateRight,
 		RotateLeft,
+		SoftDrop,
 		Pause
 	};
 
@@ -21,14 +22,38 @@ public class InputManager {
 		{ KeyCode.RightArrow, Instruction.MoveRight },
 		{ KeyCode.W, Instruction.RotateLeft },
 		{ KeyCode.UpArrow, Instruction.RotateLeft },
+		{ KeyCode.JoystickButton0, Instruction.RotateLeft },
+		{ KeyCode.JoystickButton2, Instruction.RotateLeft },
 		{ KeyCode.S, Instruction.RotateRight },
-		{ KeyCode.DownArrow, Instruction.RotateRight }
+		{ KeyCode.DownArrow, Instruction.RotateRight },
+		{ KeyCode.JoystickButton1, Instruction.RotateRight },
+		{ KeyCode.JoystickButton3, Instruction.RotateRight },
+		{ KeyCode.Space, Instruction.SoftDrop },
+	};
+
+	private string[] MoveAxes = new string[]
+	{
+		"Horizontal",
+		"DPad Horiz"
+	};
+	
+	private string[] DropAxes = new string[]
+	{
+		"Vertical",
+		"DPad Vert"
+	};
+
+	private HashSet<Instruction> _repeatableCommands = new HashSet<Instruction>()
+	{
+		Instruction.MoveLeft,
+		Instruction.MoveRight,
+		Instruction.SoftDrop,
 	};
 
 	private TetrisGame _game;
 
-	private Instruction _currentInstruction = Instruction.None;
 	private int _repeatDelay = 0;
+	private Instruction _currentMoveInstruction = Instruction.None;
 
 	public InputManager( TetrisGame game )
 	{
@@ -37,54 +62,93 @@ public class InputManager {
 
 	public void Update( bool inputLock )
 	{
-		Instruction instructionToStart = Instruction.None;
-		Instruction instructionToEnd = Instruction.None;
+		//collect commands
 
-		foreach( KeyValuePair<KeyCode, Instruction> input in _controls )
+		HashSet< Instruction > commands = new HashSet<Instruction>();
+
+		foreach( KeyValuePair<KeyCode, Instruction> control in _controls )
 		{
-			if( Input.GetKeyDown( input.Key ) )
+			if( Input.GetKeyDown( control.Key ) )
 			{
-				instructionToStart = input.Value;
+				commands.Add( control.Value );
 			}
-			
-			if( Input.GetKeyUp( input.Key ) )
+
+			if( _repeatableCommands.Contains( control.Value ) && Input.GetKey( control.Key ) )
 			{
-				instructionToEnd = input.Value;
+				commands.Add( control.Value );
 			}
 		}
 
-		if( Input.GetKeyDown( KeyCode.Space ) )
+		foreach( string axis in MoveAxes )
 		{
-			_game.SoftDrop( true );
+			if( Input.GetAxis( axis ) >= 1 )
+			{
+				commands.Add( Instruction.MoveRight );
+			}
+			if( Input.GetAxis( axis ) <= -1 )
+			{
+				commands.Add( Instruction.MoveLeft );
+			}
 		}
 		
-		if( Input.GetKeyUp( KeyCode.Space ) )
+		foreach( string axis in DropAxes )
 		{
-			_game.SoftDrop( false );
+			if( Input.GetAxis( axis ) <= -1 )
+			{
+				commands.Add( Instruction.SoftDrop );
+			}
 		}
 
-		if( instructionToEnd == _currentInstruction )
-		{
-			EndInstruction();
-		}
+		//execute commands
 
-		if( instructionToStart != Instruction.None )
+		//move
+		Instruction moveCommand = HashContainsXOR( commands, Instruction.MoveLeft, Instruction.MoveRight );
+
+		if( moveCommand != _currentMoveInstruction )
 		{
-			DoInstruction( instructionToStart, inputLock );
+			_currentMoveInstruction = moveCommand;
 			_repeatDelay = Constants.INPUT_DAS_INITIAL;
+			DoInstruction( moveCommand, inputLock );
 		}
 		else
 		{
-			RepeatInstruction( inputLock );
+			RepeatInstruction( moveCommand, inputLock );
 		}
+
+		//rotate
+		Instruction rotationCommand = HashContainsXOR( commands, Instruction.RotateLeft, Instruction.RotateRight );
+		DoInstruction( rotationCommand, inputLock );
+
+		//soft drop
+		_game.SoftDrop( commands.Contains( Instruction.SoftDrop ) );
+	}
+
+	private static Instruction HashContainsXOR( HashSet<Instruction> set, Instruction itemA, Instruction itemB )
+	{
+		Instruction result = Instruction.None;
+		
+		if( set.Contains( itemA ) && set.Contains( itemB ) )
+		{
+			result = Instruction.None;
+		}
+		else if( set.Contains( itemA ) )
+		{
+			result = itemA;
+		}
+		else if( set.Contains( itemB ) )
+		{
+			result = itemB;
+		}
+
+		return result;
 	}
 
 	private bool isDASActive()
 	{
-		return _currentInstruction == Instruction.MoveLeft || _currentInstruction == Instruction.MoveRight;
+		return _currentMoveInstruction != Instruction.None;
 	}
 
-	private void RepeatInstruction( bool inputLock )
+	private void RepeatInstruction( Instruction instruction, bool inputLock )
 	{
 		if( !inputLock )
 		{
@@ -95,7 +159,7 @@ public class InputManager {
 
 			if( _repeatDelay == 0 )
 			{
-				DoInstruction( _currentInstruction, inputLock );
+				DoInstruction( instruction, inputLock );
 				_repeatDelay = Constants.INPUT_DAS_REPEAT;
 			}
 		}
@@ -103,30 +167,30 @@ public class InputManager {
 
 	private void DoInstruction( Instruction instruction, bool inputLock )
 	{
-		_currentInstruction = instruction;
-		
 		if( !inputLock )
 		{
-			switch( _currentInstruction )
+			bool shortCircutDAS = false;
+
+			switch( instruction )
 			{
 			case Instruction.MoveLeft:
-				_game.Move( -1, 0 );
+				shortCircutDAS = !_game.Move( -1, 0 );
 				break;
 			case Instruction.MoveRight:
-				_game.Move( 1, 0 );
+				shortCircutDAS = !_game.Move( 1, 0 );
 				break;
 			case Instruction.RotateLeft:
-				_game.Rotate( -1 );
-				break;
-			case Instruction.RotateRight:
 				_game.Rotate( 1 );
 				break;
+			case Instruction.RotateRight:
+				_game.Rotate( -1 );
+				break;
+			}
+
+			if( shortCircutDAS )
+			{
+				_repeatDelay = 0;
 			}
 		}
-	}
-
-	private void EndInstruction()
-	{
-		_currentInstruction = Instruction.None;
 	}
 }

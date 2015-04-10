@@ -40,13 +40,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Shapes:
-  - {fileID: 11401156, guid: 30384e2d62c1b8349868e2afa8f6d8b0, type: 2}
-  - {fileID: 11437612, guid: 36dcbf3e350bccd4b8c1d57b58edf8f7, type: 2}
-  - {fileID: 11427822, guid: e5c962cfbc54085439ce3b07f477e6b2, type: 2}
   - {fileID: 11485734, guid: ebc992a443b2b8b4f8606085a3a3a82d, type: 2}
-  - {fileID: 11477876, guid: be0d55e2a7373554e97801f75fe5e613, type: 2}
   - {fileID: 11490914, guid: 5c97fb76431dd2b4a9089768b408c97b, type: 2}
+  - {fileID: 11401156, guid: 30384e2d62c1b8349868e2afa8f6d8b0, type: 2}
   - {fileID: 11475114, guid: 42e1f46c7c517d84783b57a3505adde3, type: 2}
+  - {fileID: 11427822, guid: e5c962cfbc54085439ce3b07f477e6b2, type: 2}
+  - {fileID: 11477876, guid: be0d55e2a7373554e97801f75fe5e613, type: 2}
+  - {fileID: 11437612, guid: 36dcbf3e350bccd4b8c1d57b58edf8f7, type: 2}
   TileSets:
   - {fileID: 11442934, guid: 273a84bbd154b7d45b4919e5d229597d, type: 2}
   - {fileID: 11442934, guid: 324f8fc0804606c40997032d6df337fb, type: 2}

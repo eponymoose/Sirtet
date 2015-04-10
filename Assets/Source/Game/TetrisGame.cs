@@ -53,6 +53,21 @@ public class TetrisGame {
 		return _level.Level;
 	}
 
+	public TileSet GetTileSet()
+	{
+		return _data.GetTileSet( _level.Level );
+	}
+
+	public GameData GetGameData()
+	{
+		return _data;
+	}
+
+	public Randomizer GetRandomizer()
+	{
+		return _randomizer;
+	}
+
 	public void Setup( GameData data )
 	{
 		_data = data;
@@ -63,11 +78,11 @@ public class TetrisGame {
 
 		_activeBricks = new ActiveBricks();
 
-		_display = GameObject.FindObjectOfType<BrickDisplay>();
-		_display.Setup( _data.GetTileSet( _level.Level ) );
-
 		_UI = GameObject.FindObjectOfType<GameUI>();
 		_UI.Setup( this );
+
+		_display = _UI.brickDisplay;
+		_display.Setup( _data.GetTileSet( _level.Level ) );
 
 		_randomizer = new Randomizer( _data );
 		_input = new InputManager( this );
@@ -82,7 +97,7 @@ public class TetrisGame {
 
 	public void NewShape()
 	{
-		_currentShape = _randomizer.GetNextShape();
+		_currentShape = _randomizer.PopNextShape();
 		_currentRotation = 0;
 		int[,] r = _currentShape.GetRotationAsArray( _currentRotation );
 		_activeBricks.SetActiveBricks( r );
@@ -96,6 +111,8 @@ public class TetrisGame {
 		{
 			GameOver();
 		}
+
+		_UI.UpdateUI();
 
 		Debug.Log( "Spawn new shape " + _currentShape.name + " at " + _activeBricks.Y );
 	}
@@ -193,6 +210,8 @@ public class TetrisGame {
 			{
 				_boardDrity = true;
 			}
+
+			_UI.UpdateUI();
 
 			Debug.Log("Starting ARE. Bucket " + bucket + " Delay " + _areDelay);
 		}

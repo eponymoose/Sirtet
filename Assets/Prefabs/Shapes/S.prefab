@@ -39,7 +39,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0f9dacfdc5c28a4683e412f81ea2b42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ColorSet: 1
+  ColorSet: 2
   Size: 3
   Rotations: 2
   Rotation0: 000000010100000101

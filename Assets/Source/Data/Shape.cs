@@ -57,10 +57,23 @@ public class Shape : MonoBehaviour {
 		{
 			for(int j = 0; j < Size; ++j)
 			{
-				retArr[i,j] = rotation[ i*Size+j ] ? ColorSet : 0;
+				retArr[Size-1-i,Size-1-j] = rotation[ i*Size+j ] ? ColorSet : 0;
 			}
 		}
 		return retArr;
+	}
+
+	public void ApplyToBoard( BoardModel board, int rotation )
+	{
+		int[,] shape = GetRotationAsArray( rotation );
+		
+		for(int i = 0; i < Size; ++i)
+		{
+			for(int j = 0; j < Size; ++j)
+			{
+				board.SetTile( i, j, shape[ j, i ] );
+			}
+		}
 	}
 
 }

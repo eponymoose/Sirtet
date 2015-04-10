@@ -18,7 +18,7 @@ public class Brick : MonoBehaviour {
 	public void UpdateDisplay( BoardModel board, ActiveBricks bricks, TileSet tileSet )
 	{
 		int color = board.GetTile( _x, _y );
-		if( color == 0 )
+		if( color == 0 && bricks != null )
 		{
 			color = bricks.GetBrickAt( _x, _y );
 		}
