@@ -58,6 +58,8 @@ public class InputManager {
 	public InputManager( TetrisGame game )
 	{
 		_game = game;
+
+		Debug.Log( "Inputs: " +  string.Join(",", Input.GetJoystickNames() ) );
 	}
 
 	public void Update( bool inputLock )

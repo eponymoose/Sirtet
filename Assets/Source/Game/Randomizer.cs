@@ -17,15 +17,20 @@ public class Randomizer {
 
 	private int GetNextShape()
 	{
-		return Random.Range(0, _data.Shapes.Length);
+		int val = Random.Range( 0, _data.Shapes.Length + 1 );
+		if( val == _nextShape || val == +_data.Shapes.Length )
+		{
+			val = Random.Range( 0, _data.Shapes.Length );
+		}
+
+		return val;
 	}
 
 	public Shape PopNextShape()
 	{
 		Shape retVal = PeekNextShape();
 		CountShape( _nextShape );
-		_nextShape = NO_SHAPE;
-		PeekNextShape();
+		_nextShape = GetNextShape();
 		return retVal;
 	}
 
