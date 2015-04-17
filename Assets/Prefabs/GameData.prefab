@@ -48,8 +48,9 @@ MonoBehaviour:
   - {fileID: 11477876, guid: be0d55e2a7373554e97801f75fe5e613, type: 2}
   - {fileID: 11437612, guid: 36dcbf3e350bccd4b8c1d57b58edf8f7, type: 2}
   TileSets:
-  - {fileID: 11442934, guid: 273a84bbd154b7d45b4919e5d229597d, type: 2}
+  - {fileID: 11442934, guid: c2bc6cc488c6df54283b643c071d0d1a, type: 2}
   - {fileID: 11442934, guid: 324f8fc0804606c40997032d6df337fb, type: 2}
+  - {fileID: 11442934, guid: c2bc6cc488c6df54283b643c071d0d1a, type: 2}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

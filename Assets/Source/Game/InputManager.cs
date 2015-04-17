@@ -159,7 +159,7 @@ public class InputManager {
 				_repeatDelay -= 1;
 			}
 
-			if( _repeatDelay == 0 )
+			if( _repeatDelay <= 0 )
 			{
 				DoInstruction( instruction, inputLock );
 				_repeatDelay = Constants.INPUT_DAS_REPEAT;
